@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('公告列表')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<main class="container app-container page-content" id="main-content">
+    <div class="page-heading">
+        <div><p class="eyebrow">ANNOUNCEMENT CENTER</p><h1>公告列表</h1><p class="page-description">查閱、編輯與維護團隊公告。</p></div>
+        <a class="btn btn-primary btn-create" th:href="@{/announcements/new(page=${currentPage}, sort=${sort}, month=${month})}"><span aria-hidden="true">＋</span> 新增公告</a>
+    </div>
+    <div class="alert alert-success" role="status" th:if="${message}" th:text="${message}"></div>
+    <section class="surface list-surface" aria-labelledby="list-title">
+        <div class="surface-heading">
+            <h2 id="list-title"><span th:text="${#strings.isEmpty(month) ? '全部公告' : month + ' 的公告'}">全部公告</span> <span class="count-badge" th:text="${announcements.totalElements}">0</span></h2>
+            <form class="list-filters" method="get" th:action="@{/announcements}" aria-label="公告排序與月份篩選">
+                <div class="filter-field"><label for="sort">發布日期排序</label><select class="form-select form-select-sm" id="sort" name="sort"><option value="newest" th:selected="${sort == 'newest'}">由新到舊</option><option value="oldest" th:selected="${sort == 'oldest'}">由舊到新</option></select></div>
+                <div class="filter-field"><label for="month">發布月份</label><input class="form-control form-control-sm" type="month" id="month" name="month" th:value="${month}" min="1000-01" max="9999-12" aria-describedby="month-help"><span class="visually-hidden" id="month-help">留白表示全部月份，依公告的發布日期篩選。</span></div>
+                <div class="filter-actions"><button class="btn btn-sm btn-primary" type="submit">套用</button><a class="btn btn-sm btn-outline-secondary" th:href="@{/announcements}">清除</a></div>
+            </form>
+        </div>
+        <div class="table-responsive" th:unless="${announcements.empty}">
+            <table class="table announcement-table align-middle mb-0">
+                <caption class="visually-hidden">公告列表，包含標題、公布者、發布日期、截止日期與管理操作。</caption>
+                <thead><tr><th scope="col">標題／公布者</th><th scope="col">發布日期</th><th scope="col">截止日期</th><th scope="col" class="text-end">操作</th></tr></thead>
+                <tbody><tr th:each="announcement : ${announcements.content}">
+                    <td class="title-cell"><a class="announcement-title" th:href="@{/announcements/{id}(id=${announcement.id}, page=${currentPage}, sort=${sort}, month=${month})}" th:text="${announcement.title}">公告標題</a><div class="row-metadata"><span th:text="${announcement.publisher}">公布者</span><span class="attachment-badge" th:if="${announcement.attachment != null}">含附件</span></div></td>
+                    <td class="date-cell" data-label="發布日期" th:text="${#temporals.format(announcement.publishDate, 'yyyy-MM-dd')}">2026-10-27</td>
+                    <td class="date-cell" data-label="截止日期" th:text="${#temporals.format(announcement.deadlineDate, 'yyyy-MM-dd')}">2026-11-03</td>
+                    <td><div class="row-actions"><a class="btn btn-sm btn-outline-secondary" th:href="@{/announcements/{id}/edit(id=${announcement.id}, page=${currentPage}, sort=${sort}, month=${month})}">修改</a><form method="post" th:action="@{/announcements/{id}/delete(id=${announcement.id}, page=${currentPage}, sort=${sort}, month=${month})}" th:attr="data-confirm='確定刪除「' + ${announcement.title} + '」？此操作無法復原。'"><button class="btn btn-sm btn-outline-danger" type="submit">刪除</button></form></div></td>
+                </tr></tbody>
+            </table>
+        </div>
+        <div class="empty-state" th:if="${announcements.empty}"><div class="empty-icon" aria-hidden="true">≡</div><h3 th:text="${#strings.isEmpty(month) ? '目前還沒有公告' : '此月份沒有公告'}">目前還沒有公告</h3><p th:text="${#strings.isEmpty(month) ? '新增第一則公告，開始管理需要傳達的訊息。' : '請選擇其他發布月份，或清除篩選查看全部公告。'}">新增第一則公告，開始管理需要傳達的訊息。</p><a class="btn btn-primary" th:if="${#strings.isEmpty(month)}" th:href="@{/announcements/new(page=${currentPage}, sort=${sort}, month=${month})}">新增公告</a><a class="btn btn-outline-secondary" th:unless="${#strings.isEmpty(month)}" th:href="@{/announcements}">查看全部公告</a></div>
+        <div class="table-footer" th:unless="${announcements.empty}">
+            <p class="results-summary" th:text="|共 ${announcements.totalElements} 筆，第 ${currentPage + 1} / ${announcements.totalPages} 頁|">共 0 筆</p>
+            <nav aria-label="公告分頁" th:if="${announcements.totalPages > 1}"><ul class="pagination pagination-sm mb-0">
+                <li class="page-item" th:classappend="${announcements.first} ? 'disabled'"><a class="page-link" th:if="${!announcements.first}" th:href="@{/announcements(page=${currentPage - 1}, sort=${sort}, month=${month})}" aria-label="上一頁">上一頁</a><span class="page-link" th:if="${announcements.first}" aria-disabled="true">上一頁</span></li>
+                <li class="page-item" th:each="number : ${pageNumbers}" th:classappend="${number == currentPage} ? 'active'"><a class="page-link" th:href="@{/announcements(page=${number}, sort=${sort}, month=${month})}" th:text="${number + 1}" th:attr="aria-current=${number == currentPage ? 'page' : null}">1</a></li>
+                <li class="page-item" th:classappend="${announcements.last} ? 'disabled'"><a class="page-link" th:if="${!announcements.last}" th:href="@{/announcements(page=${currentPage + 1}, sort=${sort}, month=${month})}" aria-label="下一頁">下一頁</a><span class="page-link" th:if="${announcements.last}" aria-disabled="true">下一頁</span></li>
+            </ul></nav>
+        </div>
+    </section>
+</main>
+</body>
+</html>

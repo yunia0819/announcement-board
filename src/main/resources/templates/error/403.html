@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('請重新操作')}"></head>
+<body><div th:replace="~{fragments/layout :: header}"></div><main class="container app-container page-content"><section class="surface error-state"><p class="error-code">403</p><h1>這次操作未能完成</h1><p>頁面可能已逾時。請回到列表，重新開啟表單後再試一次。</p><a class="btn btn-primary" th:href="@{/announcements}">返回公告列表</a></section></main></body>
+</html>

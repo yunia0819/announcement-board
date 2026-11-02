@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('找不到資料')}"></head>
+<body><div th:replace="~{fragments/layout :: header}"></div><main class="container app-container page-content"><section class="surface error-state"><p class="error-code">404</p><h1>找不到這份資料</h1><p>公告或附件可能已被刪除，或網址輸入有誤。</p><a class="btn btn-primary" th:href="@{/announcements}">返回公告列表</a></section></main></body>
+</html>

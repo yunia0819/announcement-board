@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/announcements?connectionTimeZone=%2B08:00&forceConnectionTimeZoneToSession=true}
+    username: ${DB_USERNAME:announcement_app}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver

@@ -1,0 +1,19 @@
+/target/
+/var/
+/.tools/
+/.m2/
+/.idea/
+/.vscode/
+*.iml
+*.log
+.env
+.env.*
+*.env
+!.env.example
+*.pem
+*.key
+*.war
+!/.mvn/wrapper/maven-wrapper.jar
+# Private working notes and a temporary shell output file.
+/技術測驗_初步實作規劃.md
+/x[[]1])

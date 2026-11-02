@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('公告內容')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<main class="container app-container page-content form-page">
+    <a class="back-link" th:href="@{/announcements(page=${currentPage}, sort=${sort}, month=${month})}"><span aria-hidden="true">←</span> 返回公告列表</a>
+    <article class="surface detail-card">
+        <header class="detail-header"><p class="eyebrow">公告內容</p><h1 th:text="${announcement.title}">公告標題</h1><dl class="detail-metadata"><div><dt>公布者</dt><dd th:text="${announcement.publisher}">公布者</dd></div><div><dt>發布日期</dt><dd th:text="${#temporals.format(announcement.publishDate, 'yyyy-MM-dd')}">2026-10-27</dd></div><div><dt>截止日期</dt><dd th:text="${#temporals.format(announcement.deadlineDate, 'yyyy-MM-dd')}">2026-11-03</dd></div></dl></header>
+        <div class="announcement-content" th:if="${announcement.contentHtml == null}" th:text="${announcement.content}">公告內容</div>
+        <div class="announcement-content rich-content" th:unless="${announcement.contentHtml == null}" th:utext="${safeContentHtml}"></div>
+        <section class="detail-attachment" th:if="${announcement.attachment != null}" aria-labelledby="download-title"><h2 id="download-title">附件下載</h2><a class="attachment-link" th:href="@{/attachments/{id}(id=${announcement.attachment.id})}" th:text="${announcement.attachment.originalFilename}">attachment.pdf</a><p class="form-text mb-0" th:text="|${announcement.attachment.sizeBytes} bytes|">0 bytes</p></section>
+        <div class="form-actions"><a class="btn btn-outline-secondary" th:href="@{/announcements(page=${currentPage}, sort=${sort}, month=${month})}">返回列表</a><a class="btn btn-primary" th:href="@{/announcements/{id}/edit(id=${announcement.id}, page=${currentPage}, sort=${sort}, month=${month})}">修改公告</a></div>
+    </article>
+</main>
+</body>
+</html>

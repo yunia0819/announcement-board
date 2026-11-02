@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${editing ? '修改公告' : '新增公告'})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<main class="container app-container page-content form-page">
+    <a class="back-link" th:href="@{/announcements(page=${currentPage}, sort=${sort}, month=${month})}"><span aria-hidden="true">←</span> 返回公告列表</a>
+    <div class="page-heading"><div><p class="eyebrow">公告編輯</p><h1 th:text="${editing ? '修改公告' : '新增公告'}">新增公告</h1><p class="page-description">填寫公告資訊，讓內容與發布時程一目了然。</p></div></div>
+    <form class="surface editor-form" method="post" enctype="multipart/form-data" th:object="${form}"
+          th:action="${editing} ? @{/announcements/{id}/edit(id=${announcementId})} : @{/announcements/new}">
+        <input type="hidden" name="page" th:value="${currentPage}">
+        <input type="hidden" name="sort" th:value="${sort}">
+        <input type="hidden" name="month" th:value="${month}">
+        <div class="form-content">
+            <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}"><p class="mb-1" th:each="error : ${#fields.globalErrors()}" th:text="${error}"></p></div>
+            <p class="form-note"><span class="required-mark" aria-hidden="true">*</span> 為必填欄位</p>
+            <div class="mb-4"><label class="form-label" for="title">公告標題 <span class="required-mark" aria-hidden="true">*</span></label><input class="form-control" type="text" th:field="*{title}" maxlength="200" required th:errorclass="is-invalid" aria-describedby="title-help title-error" placeholder="請輸入清楚、簡潔的公告標題"><div id="title-help" class="form-text">最多 200 字。</div><div class="invalid-feedback" id="title-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div></div>
+            <div class="mb-4"><label class="form-label" for="publisher">公布者 <span class="required-mark" aria-hidden="true">*</span></label><input class="form-control" type="text" th:field="*{publisher}" maxlength="100" required th:errorclass="is-invalid" aria-describedby="publisher-error" placeholder="姓名或單位名稱"><div class="invalid-feedback" id="publisher-error" th:if="${#fields.hasErrors('publisher')}" th:errors="*{publisher}"></div></div>
+            <div class="row g-4 mb-4"><div class="col-md-6"><label class="form-label" for="publishDate">發布日期 <span class="required-mark" aria-hidden="true">*</span></label><input class="form-control" type="date" th:field="*{publishDate}" required th:errorclass="is-invalid" aria-describedby="publishDate-error"><div class="invalid-feedback" id="publishDate-error" th:if="${#fields.hasErrors('publishDate')}" th:errors="*{publishDate}"></div></div><div class="col-md-6"><label class="form-label" for="deadlineDate">截止日期 <span class="required-mark" aria-hidden="true">*</span></label><input class="form-control" type="date" th:field="*{deadlineDate}" required th:errorclass="is-invalid" aria-describedby="deadlineDate-help deadlineDate-error"><div id="deadlineDate-help" class="form-text">不得早於發布日期，可與發布日期相同。</div><div class="invalid-feedback" id="deadlineDate-error" th:if="${#fields.hasErrors('deadlineDate')}" th:errors="*{deadlineDate}"></div></div></div>
+            <div class="mb-4 rich-content-field">
+                <label class="form-label" id="content-label" for="content">公布內容 <span class="required-mark" aria-hidden="true">*</span></label>
+                <div class="rich-editor-shell" id="content-editor-shell" hidden>
+                    <div class="rich-editor-toolbar" id="content-toolbar" role="group" aria-label="公告內文文字編輯工具">
+                        <div class="editor-toolbar-group editor-select-group">
+                            <label for="editor-size">字級<select id="editor-size" class="editor-select" data-editor-format="size"><option value="14">14 px</option><option value="16" selected>16 px</option><option value="18">18 px</option><option value="20">20 px</option><option value="24">24 px</option><option value="28">28 px</option><option value="32">32 px</option></select></label>
+                        </div>
+                        <div class="editor-toolbar-group">
+                            <button type="button" class="editor-tool editor-tool-bold" data-editor-format="bold" aria-label="粗體" aria-pressed="false">粗體</button>
+                            <button type="button" class="editor-tool editor-tool-italic" data-editor-format="italic" aria-label="斜體" aria-pressed="false">斜體</button>
+                            <button type="button" class="editor-tool editor-tool-underline" data-editor-format="underline" aria-label="底線" aria-pressed="false">底線</button>
+                            <button type="button" class="editor-tool editor-tool-strike" data-editor-format="strike" aria-label="刪除線" aria-pressed="false">刪除線</button>
+                        </div>
+                        <div class="editor-toolbar-group editor-select-group">
+                            <label for="editor-color">文字顏色<select id="editor-color" class="editor-select" data-editor-format="color"><option value="">預設</option><option value="black">黑色</option><option value="firebrick">紅色</option><option value="darkorange">橙色</option><option value="forestgreen">綠色</option><option value="royalblue">藍色</option><option value="indigo">紫色</option><option value="dimgray">灰色</option></select></label>
+                        </div>
+                    </div>
+                    <div class="rich-editor" id="content-editor"></div>
+                    <div class="editor-status"><span id="content-count">0 / 10,000 字</span></div>
+                </div>
+                <textarea class="form-control content-input" th:field="*{content}" rows="10" maxlength="10000" required th:errorclass="is-invalid" aria-describedby="content-help content-error" placeholder="請輸入完整公告內容"></textarea>
+                <textarea th:field="*{contentHtml}" hidden disabled></textarea>
+                <div id="content-help" class="form-text">最多 10,000 字，可調整字級、文字顏色與粗體等文字樣式。</div>
+                <div class="editor-client-error" id="content-client-error" role="alert" hidden></div>
+                <div class="invalid-feedback" id="content-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+                <div class="invalid-feedback" id="contentHtml-error" th:if="${#fields.hasErrors('contentHtml')}" th:errors="*{contentHtml}"></div>
+            </div>
+            <section class="attachment-section" aria-labelledby="attachment-title"><h2 id="attachment-title">公告附件 <span class="optional-label">選填</span></h2>
+                <div class="existing-attachment" th:if="${existingAttachment != null}"><div><span class="muted-caption">目前附件</span><a class="attachment-link" th:href="@{/attachments/{id}(id=${existingAttachment.id})}" th:text="${existingAttachment.originalFilename}">attachment.pdf</a></div><div class="form-check"><input class="form-check-input" type="checkbox" id="removeAttachment" name="removeAttachment" value="true" th:checked="${removeAttachment == true}"><label class="form-check-label" for="removeAttachment">移除目前附件</label></div></div>
+                <label class="form-label" for="file" th:text="${existingAttachment != null ? '上傳新附件（取代目前附件）' : '選擇附件'}">選擇附件</label><input class="form-control" type="file" name="file" id="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" aria-describedby="file-help file-client-error"><div id="file-help" class="form-text">每則公告最多 1 個附件，支援 PDF、PNG、JPG，大小上限 5 MB。若表單驗證失敗，請重新選擇檔案。</div><div id="file-client-error" class="invalid-feedback" aria-live="polite"></div>
+            </section>
+        </div>
+        <div class="form-actions"><a class="btn btn-outline-secondary" th:href="@{/announcements(page=${currentPage}, sort=${sort}, month=${month})}">取消</a><button class="btn btn-primary" type="submit" th:text="${editing ? '儲存修改' : '建立公告'}">建立公告</button></div>
+    </form>
+</main>
+</body>
+</html>

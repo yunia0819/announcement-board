@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('操作未完成')}"></head>
+<body><div th:replace="~{fragments/layout :: header}"></div><main class="container app-container page-content"><section class="surface error-state"><p class="error-code" th:text="${status ?: 'ERROR'}">ERROR</p><h1>這次操作未能完成</h1><p>請確認輸入內容後再試一次，或回到列表重新操作。</p><a class="btn btn-primary" th:href="@{/announcements}">返回公告列表</a></section></main></body>
+</html>

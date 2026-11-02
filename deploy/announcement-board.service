@@ -1,0 +1,32 @@
+# Managed by announcement-board deployment scripts.
+[Unit]
+Description=Announcement Board on Apache Tomcat 11
+After=network.target mysqld.service
+
+[Service]
+Type=simple
+User=tomcat
+Group=tomcat
+WorkingDirectory=/var/lib/announcement-board
+Environment=JAVA_HOME=/usr/lib/jvm/jre-21-openjdk
+Environment=CATALINA_HOME=/opt/announcement-board/tomcat-current
+Environment=CATALINA_BASE=/var/lib/announcement-board/tomcat
+Environment=CATALINA_TMPDIR=/var/lib/announcement-board/tomcat/temp
+EnvironmentFile=/etc/announcement-board/announcement.env
+ExecStart=/opt/announcement-board/tomcat-current/bin/catalina.sh run
+SuccessExitStatus=143
+KillSignal=SIGTERM
+TimeoutStopSec=45
+Restart=on-failure
+RestartSec=5
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/announcement-board/tomcat/logs /var/lib/announcement-board/tomcat/temp /var/lib/announcement-board/tomcat/work /var/lib/announcement-board/uploads
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
